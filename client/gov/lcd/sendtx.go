@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/irisnet/irishub/client/context"
 	"github.com/irisnet/irishub/client/utils"
-	"github.com/irisnet/irishub/modules/gov"
+	"github.com/irisnet/irishub/app/v1/gov"
 	"net/http"
 	client "github.com/irisnet/irishub/client/gov"
 )
