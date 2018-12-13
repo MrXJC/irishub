@@ -9,7 +9,7 @@ import (
 	"github.com/irisnet/irishub/app"
 	"github.com/irisnet/irishub/client/context"
 	client "github.com/irisnet/irishub/client/gov"
-	"github.com/irisnet/irishub/modules/gov"
+	"github.com/irisnet/irishub/app/v2/gov"
 	"github.com/irisnet/irishub/modules/gov/params"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

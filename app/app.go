@@ -15,6 +15,7 @@ import (
 	distr "github.com/irisnet/irishub/modules/distribution"
 	"github.com/irisnet/irishub/modules/gov"
 	gov1 "github.com/irisnet/irishub/app/v1/gov"
+	gov2 "github.com/irisnet/irishub/app/v2/gov"
 	"github.com/irisnet/irishub/modules/guardian"
 	"github.com/irisnet/irishub/modules/record"
 	"github.com/irisnet/irishub/modules/service"
@@ -31,6 +32,7 @@ import (
 	protocolKeeper "github.com/irisnet/irishub/app/protocol/keeper"
 	"github.com/irisnet/irishub/app/v0"
 	"github.com/irisnet/irishub/app/v1"
+	"github.com/irisnet/irishub/app/v2"
 )
 
 const (
@@ -85,6 +87,8 @@ func NewIrisApp(logger log.Logger, db dbm.DB, traceStore io.Writer, baseAppOptio
 	engine.Add(protocol0)
 	protocol1 := v1.NewProtocolVersion1(cdc)
 	engine.Add(protocol1)
+	protocol2 := v2.NewProtocolVersion2(cdc)
+	engine.Add(protocol2)
 
 	engine.LoadCurrentProtocol(app.GetKVStore(protocol.KeyProtocol))
 
@@ -100,6 +104,7 @@ func MakeCodec() *codec.Codec {
 	slashing.RegisterCodec(cdc)
 	gov.RegisterCodec(cdc)
 	gov1.RegisterCodec(cdc)
+	gov2.RegisterCodec(cdc)
 	record.RegisterCodec(cdc)
 	upgrade.RegisterCodec(cdc)
 	service.RegisterCodec(cdc)
