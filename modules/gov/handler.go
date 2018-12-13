@@ -113,12 +113,11 @@ func handleMsgSubmitTxTaxUsageProposal(ctx sdk.Context, keeper Keeper, msg MsgSu
 }
 
 func handleMsgSubmitSoftwareUpgradeProposal(ctx sdk.Context, keeper Keeper, msg MsgSubmitSoftwareUpgradeProposal) sdk.Result {
-	//_, found := keeper.gk.GetProfiler(ctx, msg.Proposer)
-	//if !found {
-	//	return ErrNotProfiler(keeper.codespace, msg.Proposer).Result()
-	//}
 
-
+	_, found := keeper.gk.GetProfiler(ctx, msg.Proposer)
+	if !found {
+		return ErrNotProfiler(keeper.codespace, msg.Proposer).Result()
+	}
 
 	if msg.ProposalType == ProposalTypeSoftwareUpgrade {
 		emptyUpgradeConfig := protocolKeeper.UpgradeConfig{}
@@ -126,7 +125,6 @@ func handleMsgSubmitSoftwareUpgradeProposal(ctx sdk.Context, keeper Keeper, msg 
 			return ErrSwitchPeriodInProcess(keeper.codespace).Result()
 		}
 	}
-
 
 	proposal := keeper.NewSoftwareUpgradeProposal(ctx, msg)
 
