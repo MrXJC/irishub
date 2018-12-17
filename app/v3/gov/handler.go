@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"github.com/irisnet/irishub/modules/gov/params"
 	tmstate "github.com/tendermint/tendermint/state"
-	protocolKeeper "github.com/irisnet/irishub/app/protocol/keeper"
 )
 
 // Handle all "gov" type messages.
@@ -77,9 +76,11 @@ func handleMsgSubmitProposal(ctx sdk.Context, keeper Keeper, msg MsgSubmitPropos
 }
 
 func handleMsgSubmitTxTaxUsageProposal(ctx sdk.Context, keeper Keeper, msg MsgSubmitTxTaxUsageProposal) sdk.Result {
-	_, found := keeper.gk.GetTrustee(ctx, msg.DestAddress)
-	if !found {
-		return ErrNotTrustee(keeper.codespace, msg.DestAddress).Result()
+	if msg.Usage != UsageTypeBurn {
+		_, found := keeper.gk.GetTrustee(ctx, msg.DestAddress)
+		if !found {
+			return ErrNotTrustee(keeper.codespace, msg.DestAddress).Result()
+		}
 	}
 
 	proposal := keeper.NewUsageProposal(ctx, msg)
@@ -114,18 +115,23 @@ func handleMsgSubmitTxTaxUsageProposal(ctx sdk.Context, keeper Keeper, msg MsgSu
 
 func handleMsgSubmitSoftwareUpgradeProposal(ctx sdk.Context, keeper Keeper, msg MsgSubmitSoftwareUpgradeProposal) sdk.Result {
 
+	if  !keeper.pk.IsValidProtocolVersion(ctx, msg.Version) {
+		return ErrCodeInvalidVersion(keeper.codespace, msg.Version, keeper.pk.GetCurrentProtocolVersion(ctx)).Result()
+	}
+
+	if uint64(ctx.BlockHeight()) > msg.SwitchHeight {
+		return ErrCodeInvalidSwitchHeight(keeper.codespace,uint64(ctx.BlockHeight()),msg.SwitchHeight).Result()
+	}
+
+	if _ , ok := keeper.pk.GetUpgradeConfig(ctx) ; ok {
+		return ErrSwitchPeriodInProcess(keeper.codespace).Result()
+	}
+
+
 	_, found := keeper.gk.GetProfiler(ctx, msg.Proposer)
 	if found {
 		return ErrNotProfiler(keeper.codespace, msg.Proposer).Result()
 	}
-
-	if msg.ProposalType == ProposalTypeSoftwareUpgrade {
-		emptyUpgradeConfig := protocolKeeper.UpgradeConfig{}
-		if keeper.pk.GetUpgradeConfig(ctx) != emptyUpgradeConfig {
-			return ErrSwitchPeriodInProcess(keeper.codespace).Result()
-		}
-	}
-
 
 	proposal := keeper.NewSoftwareUpgradeProposal(ctx, msg)
 

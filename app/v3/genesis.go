@@ -1,4 +1,4 @@
-package v2
+package v3
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 	"github.com/irisnet/irishub/modules/arbitration"
 	"github.com/irisnet/irishub/modules/auth"
 	distr "github.com/irisnet/irishub/modules/distribution"
-	"github.com/irisnet/irishub/app/v2/gov"
+	"github.com/irisnet/irishub/app/v3/gov"
 	"github.com/irisnet/irishub/modules/guardian"
 	"github.com/irisnet/irishub/modules/mint"
 	"github.com/irisnet/irishub/modules/service"

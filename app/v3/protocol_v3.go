@@ -1,4 +1,4 @@
-package v2
+package v3
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/irisnet/irishub/modules/auth"
 	"github.com/irisnet/irishub/modules/bank"
 	distr "github.com/irisnet/irishub/modules/distribution"
-	"github.com/irisnet/irishub/app/v2/gov"
+	"github.com/irisnet/irishub/app/v3/gov"
 	"github.com/irisnet/irishub/modules/gov/params"
 	"github.com/irisnet/irishub/modules/guardian"
 	"github.com/irisnet/irishub/modules/mint"
@@ -65,11 +65,11 @@ type ProtocolVersion0 struct {
 
 }
 
-func NewProtocolVersion2(cdc *codec.Codec) *ProtocolVersion0 {
+func NewProtocolVersion3(cdc *codec.Codec) *ProtocolVersion0 {
 	base := protocol.ProtocolBase{
 		Definition: common.ProtocolDefinition{
-			uint64(2),
-			"https://github.com/irisnet/irishub/releases/tag/v0.9.0",
+			uint64(3),
+			"https://github.com/irisnet/irishub/releases/tag/v0.10.0",
 			uint64(1),
 		},
 		//		engine: engine,
@@ -89,7 +89,6 @@ func (p *ProtocolVersion0) Load(protocolkeeper protocolKeeper.Keeper) {
 	p.configRouters()
 	p.configFeeHandlers()
 	p.configParams()
-	p.configStores()
 }
 
 // verison0 don't need the init
@@ -201,15 +200,28 @@ func (p *ProtocolVersion0) configRouters() {
 
 // configure all Stores
 func (p *ProtocolVersion0) configFeeHandlers() {
-
 	p.anteHandler = auth.NewAnteHandler(p.accountMapper, p.feeCollectionKeeper)
 	p.feeRefundHandler = auth.NewFeeRefundHandler(p.accountMapper, p.feeCollectionKeeper, p.feeManager)
 	p.feePreprocessHandler = auth.NewFeePreprocessHandler(p.feeManager)
 }
 
 // configure all Stores
-func (p *ProtocolVersion0) configStores() {
-
+func (p *ProtocolVersion0) GetKVStoreKeyList()  []*sdk.KVStoreKey {
+	return []*sdk.KVStoreKey{
+		protocol.KeyMain,
+		protocol.KeyProtocol,
+		protocol.KeyAccount,
+		protocol.KeyStake,
+		protocol.KeyMint,
+		protocol.KeyDistr,
+		protocol.KeySlashing,
+		protocol.KeyGov,
+		protocol.KeyRecord,
+		protocol.KeyFeeCollection,
+		protocol.KeyParams,
+		protocol.KeyUpgrade,
+		protocol.KeyService,
+		protocol.KeyGuardian}
 }
 
 // configure all Stores
