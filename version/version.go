@@ -18,7 +18,7 @@ var GitCommit = ""
 func GetVersion() string {
 	v := Version
 	if GitCommit != "" {
-		v = v + "-" + GitCommit + strconv.Itoa(ProtocolVersion)
+		v = v + "-" + GitCommit + "-" + strconv.Itoa(ProtocolVersion)
 	}
 	return v
 }
