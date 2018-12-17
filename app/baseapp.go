@@ -20,6 +20,8 @@ import (
 	"github.com/irisnet/irishub/version"
 	"strconv"
 	"github.com/gogo/protobuf/proto"
+	tmstate "github.com/tendermint/tendermint/state"
+	protocolKeeper "github.com/irisnet/irishub/app/protocol/keeper"
 )
 
 // Key to store the consensus params in the main store.
@@ -710,17 +712,26 @@ func (app *BaseApp) runTx(mode RunTxMode, txBytes []byte, tx sdk.Tx) (result sdk
 
 		result.GasWanted = gasWanted
 		result.GasUsed = ctx.GasMeter().GasConsumed()
+	}()
 
+	// Add cache in fee refund. If an error is returned or panic happes during refund,
+	// no value will be written into blockchain state.
+	defer func() {
+
+		result.GasUsed = ctx.GasMeter().GasConsumed()
+		var refundCtx sdk.Context
+		var refundCache sdk.CacheMultiStore
+		refundCtx, refundCache = app.cacheTxContext(ctx, txBytes)
 		feeRefundHandler := app.Engine.GetCurrentProtocol().GetFeeRefundHandler()
+
 		// Refund unspent fee
 		if mode != RunTxModeCheck && feeRefundHandler != nil {
-			_, err := feeRefundHandler(ctx, tx, result)
+			_, err := feeRefundHandler(refundCtx, tx, result)
 			if err != nil {
 				result = sdk.ErrInternal(err.Error()).Result()
-				result.GasWanted = gasWanted
-				result.GasUsed = ctx.GasMeter().GasConsumed()
 				return
 			}
+			refundCache.Write()
 		}
 	}()
 
@@ -811,16 +822,21 @@ func (app *BaseApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBloc
 		res = endBlocker(app.deliverState.ctx, req)
 	}
 
-	current,_ := strconv.ParseUint(string(res.Tags[len(res.Tags)-1].Value),10,64)
-
-	if current != app.Engine.GetCurrent() {
-		success := app.Engine.Activate(current)
-		if success {
-			res.Tags = res.Tags[:len(res.Tags)-2]
-			return
+	//Todo: appVersion Tag.util
+	if appVersionStr, ok := abci.GetTagByKey(res.Tags, protocolKeeper.AppVersion); ok {
+		appVersion,_ := strconv.ParseUint(string(appVersionStr.Value),10,64)
+		if appVersion != app.Engine.GetCurrentVersion() {
+			success := app.Engine.Activate(appVersion)
+			if !success {
+				if upgradeConfig, ok := app.Engine.GetUpgradeConfigByStore(app.GetKVStore(protocol.KeyProtocol)); ok {
+					res.Tags = append(res.Tags,
+						sdk.MakeTag(tmstate.UpgradeFailureTagKey,
+							[]byte("Please install the right protocol version from " + upgradeConfig.Definition.Software)))
+					return
+				}
+			}
 		}
 	}
-	res.Tags = res.Tags[:len(res.Tags)-1]
 	return
 }
 
@@ -830,7 +846,7 @@ func (app *BaseApp) Commit() (res abci.ResponseCommit) {
 
 	// Write the Deliver state and commit the MultiStore
 	app.deliverState.ms.Write()
-	commitID := app.cms.Commit()
+	commitID := app.cms.Commit(app.Engine.GetCurrentProtocol().GetKVStoreKeyList())
 	// TODO: this is missing a module identifier and dumps byte array
 	app.Logger.Debug("Commit synced",
 		"commit", commitID,

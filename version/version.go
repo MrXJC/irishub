@@ -7,8 +7,8 @@ import (
 )
 
 // Version - Iris Version
-const Version = "0.9.0-Alpha"
 const ProtocolVersion = 1
+const Version = "0.9.0-Beta"
 
 // GitCommit set by build flags
 var GitCommit = ""
@@ -21,7 +21,6 @@ func GetVersion() string {
 	}
 	return v
 }
-
 // ServeVersionCommand
 func ServeVersionCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{

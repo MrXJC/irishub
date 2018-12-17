@@ -27,7 +27,9 @@ const (
 	CodeSwitchPeriodInProcess sdk.CodeType = 14
 	CodeInvalidPercent        sdk.CodeType = 15
 	CodeInvalidUsageType      sdk.CodeType = 16
-	CodeInvalidInput          sdk.CodeType = 16
+	CodeInvalidInput          sdk.CodeType = 17
+	CodeInvalidVersion        sdk.CodeType = 18
+	CodeInvalidSwitchHeight   sdk.CodeType = 19
 	////////////////////  iris end  /////////////////////////////
 )
 
@@ -87,7 +89,7 @@ func ErrSwitchPeriodInProcess(codespace sdk.CodespaceType) sdk.Error {
 }
 
 func ErrInvalidPercent(codespace sdk.CodespaceType, percent sdk.Dec) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidPercent, fmt.Sprintf("invalid percent [%s], must >0 & <=1", percent))
+	return sdk.NewError(codespace, CodeInvalidPercent, fmt.Sprintf("invalid percent [%s], must be greater than 0 and less than or equal to 1", percent.String()))
 }
 
 func ErrInvalidUsageType(codespace sdk.CodespaceType, usageType UsageType) sdk.Error {
@@ -100,6 +102,13 @@ func ErrNotTrustee(codespace sdk.CodespaceType, trustee sdk.AccAddress) sdk.Erro
 
 func ErrNotProfiler(codespace sdk.CodespaceType, profiler sdk.AccAddress) sdk.Error {
 	return sdk.NewError(codespace, CodeInvalidInput, fmt.Sprintf("[%s] is not a profiler address", profiler))
+}
+
+func ErrCodeInvalidVersion(codespace sdk.CodespaceType, version uint64, currentVersion uint64) sdk.Error {
+	return sdk.NewError(codespace, CodeInvalidVersion, fmt.Sprintf("Version [%v] in SoftwareUpgradeProposal isn't large than current version [%v] ", version, currentVersion))
+}
+func ErrCodeInvalidSwitchHeight(codespace sdk.CodespaceType, blockHeight uint64, switchHeight uint64) sdk.Error {
+	return sdk.NewError(codespace, CodeInvalidVersion, fmt.Sprintf("Protocol switchHeight [%v] in SoftwareUpgradeProposal isn't large than current block height [%v]", switchHeight, blockHeight))
 }
 
 ////////////////////  iris end  /////////////////////////////
