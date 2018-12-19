@@ -116,12 +116,13 @@ func handleMsgSubmitTxTaxUsageProposal(ctx sdk.Context, keeper Keeper, msg MsgSu
 func handleMsgSubmitSoftwareUpgradeProposal(ctx sdk.Context, keeper Keeper, msg MsgSubmitSoftwareUpgradeProposal) sdk.Result {
 
 	if  !keeper.pk.IsValidProtocolVersion(ctx, msg.Version) {
-		return ErrCodeInvalidVersion(keeper.codespace, msg.Version, keeper.pk.GetCurrentProtocolVersion(ctx)).Result()
+		return ErrCodeInvalidVersion(keeper.codespace, msg.Version).Result()
 	}
 
 	if uint64(ctx.BlockHeight()) > msg.SwitchHeight {
 		return ErrCodeInvalidSwitchHeight(keeper.codespace,uint64(ctx.BlockHeight()),msg.SwitchHeight).Result()
 	}
+
 
 	if _ , ok := keeper.pk.GetUpgradeConfig(ctx) ; ok {
 		return ErrSwitchPeriodInProcess(keeper.codespace).Result()
