@@ -101,7 +101,7 @@ func GetCmdSubmitProposal(cdc *codec.Codec) *cobra.Command {
 
 	cmd.Flags().String(flagTitle, "", "title of proposal")
 	cmd.Flags().String(flagDescription, "", "description of proposal")
-	cmd.Flags().String(flagProposalType, "", "proposalType of proposal,eg:Text/ParameterChange/SoftwareUpgrade")
+	cmd.Flags().String(flagProposalType, "", "proposalType of proposal,eg:Text/ParameterChange/SoftwareUpgrade/SoftwareHalt/TxTaxUsage")
 	cmd.Flags().String(flagDeposit, "", "deposit of proposal")
 	////////////////////  iris begin  ///////////////////////////
 	cmd.Flags().String(flagParam, "", "parameter of proposal,eg. [{key:key,value:value,op:update}]")
@@ -116,6 +116,11 @@ func GetCmdSubmitProposal(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagSoftware, " ", "the software of the new protocol")
 	cmd.Flags().String(flagSwitchHeight, "0", "the switchheight of the new protocol")
 	////////////////////  iris end  /////////////////////////////
+
+	cmd.MarkFlagRequired(flagTitle)
+	cmd.MarkFlagRequired(flagDescription)
+	cmd.MarkFlagRequired(flagProposalType)
+	cmd.MarkFlagRequired(flagDeposit)
 	return cmd
 }
 

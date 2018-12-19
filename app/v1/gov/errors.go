@@ -30,6 +30,11 @@ const (
 	CodeInvalidInput          sdk.CodeType = 17
 	CodeInvalidVersion        sdk.CodeType = 18
 	CodeInvalidSwitchHeight   sdk.CodeType = 19
+
+	CodeVoteDeleted       sdk.CodeType = 20
+	CodeDepositDeleted    sdk.CodeType = 21
+	CodeVoteNotExisted    sdk.CodeType = 22
+	CodeDepositNotExisted sdk.CodeType = 23
 	////////////////////  iris end  /////////////////////////////
 )
 
@@ -104,11 +109,28 @@ func ErrNotProfiler(codespace sdk.CodespaceType, profiler sdk.AccAddress) sdk.Er
 	return sdk.NewError(codespace, CodeInvalidInput, fmt.Sprintf("[%s] is not a profiler address", profiler))
 }
 
-func ErrCodeInvalidVersion(codespace sdk.CodespaceType, version uint64, currentVersion uint64) sdk.Error {
-	return sdk.NewError(codespace, CodeInvalidVersion, fmt.Sprintf("Version [%v] in SoftwareUpgradeProposal isn't large than current version [%v] ", version, currentVersion))
+func ErrCodeInvalidVersion(codespace sdk.CodespaceType, version uint64) sdk.Error {
+	return sdk.NewError(codespace, CodeInvalidVersion, fmt.Sprintf("Version [%v] in SoftwareUpgradeProposal isn't valid", version))
 }
+
 func ErrCodeInvalidSwitchHeight(codespace sdk.CodespaceType, blockHeight uint64, switchHeight uint64) sdk.Error {
 	return sdk.NewError(codespace, CodeInvalidVersion, fmt.Sprintf("Protocol switchHeight [%v] in SoftwareUpgradeProposal isn't large than current block height [%v]", switchHeight, blockHeight))
+}
+
+func ErrCodeVoteDeleted(codespace sdk.CodespaceType, proposalID uint64) sdk.Error {
+	return sdk.NewError(codespace, CodeVoteDeleted, fmt.Sprintf("The vote records of proposal [%d] have been deleted.", proposalID))
+}
+
+func ErrCodeDepositDeleted(codespace sdk.CodespaceType, proposalID uint64) sdk.Error {
+	return sdk.NewError(codespace, CodeDepositDeleted, fmt.Sprintf("The deposit records of proposal [%d] have been deleted.", proposalID))
+}
+
+func ErrCodeVoteNotExisted(codespace sdk.CodespaceType, address sdk.AccAddress, proposalID uint64) sdk.Error {
+	return sdk.NewError(codespace, CodeVoteNotExisted, fmt.Sprintf("Address %s hasn't voted for the proposal [%d]", address, proposalID))
+}
+
+func ErrCodeDepositNotExisted(codespace sdk.CodespaceType, address sdk.AccAddress, proposalID uint64) sdk.Error {
+	return sdk.NewError(codespace, CodeDepositNotExisted, fmt.Sprintf("Address %s hasn't deposited on the proposal [%d", address, proposalID))
 }
 
 ////////////////////  iris end  /////////////////////////////

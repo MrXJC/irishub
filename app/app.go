@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/irisnet/irishub/app/protocol"
+	protocolKeeper "github.com/irisnet/irishub/app/protocol/keeper"
+	"github.com/irisnet/irishub/app/v0"
 	"github.com/irisnet/irishub/codec"
 	"github.com/irisnet/irishub/modules/auth"
 	"github.com/irisnet/irishub/modules/bank"
@@ -28,8 +30,6 @@ import (
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
-	protocolKeeper "github.com/irisnet/irishub/app/protocol/keeper"
-	"github.com/irisnet/irishub/app/v0"
 	"github.com/irisnet/irishub/app/v1"
 )
 
