@@ -2,7 +2,6 @@ package gov
 
 import (
 	"github.com/irisnet/irishub/codec"
-	"github.com/irisnet/irishub/modules/gov/params"
 )
 
 // Register concrete types on codec codec
@@ -18,9 +17,6 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(&TextProposal{}, "gov/TextProposal1", nil)
 
 	////////////////////  iris begin  ///////////////////////////
-	cdc.RegisterConcrete(&govparams.DepositProcedure{}, "cosmos-sdk/DepositProcedure1", nil)
-	cdc.RegisterConcrete(&govparams.TallyingProcedure{}, "cosmos-sdk/TallyingProcedure1", nil)
-	cdc.RegisterConcrete(&govparams.VotingProcedure{}, "cosmos-sdk/VotingProcedure1", nil)
 	cdc.RegisterConcrete(&ParameterProposal{}, "gov/ParameterProposal1", nil)
 	cdc.RegisterConcrete(&SoftwareUpgradeProposal{}, "gov/SoftwareUpgradeProposal1", nil)
 	cdc.RegisterConcrete(&HaltProposal{}, "gov/TerminatorProposal1", nil)
