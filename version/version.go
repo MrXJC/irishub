@@ -8,8 +8,8 @@ import (
 )
 
 // Version - Iris Version
-const ProtocolVersion = 0
-const Version = "0.9.0-rc0"
+const ProtocolVersion = 1
+const Version = "0.9.1-rc0"
 // GitCommit set by build flags
 var GitCommit = ""
 

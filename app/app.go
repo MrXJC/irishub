@@ -16,6 +16,7 @@ import (
 	"github.com/irisnet/irishub/modules/bank"
 	distr "github.com/irisnet/irishub/modules/distribution"
 	"github.com/irisnet/irishub/modules/gov"
+	gov1 "github.com/irisnet/irishub/app/v1/gov"
 	"github.com/irisnet/irishub/modules/guardian"
 	"github.com/irisnet/irishub/modules/record"
 	"github.com/irisnet/irishub/modules/service"
@@ -30,6 +31,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 	govtypes "github.com/irisnet/irishub/types/gov"
+	"github.com/irisnet/irishub/app/v1"
 )
 
 const (
@@ -82,8 +84,8 @@ func NewIrisApp(logger log.Logger, db dbm.DB, traceStore io.Writer, baseAppOptio
 
 	protocol0 := v0.NewProtocolVersion0(cdc)
 	engine.Add(protocol0)
-	//	protocol1 := protocol.NewProtocolVersion1(cdc)
-	//	Engine.Add(&protocol1)
+	protocol1 := v1.NewProtocolVersion1(cdc)
+	engine.Add(protocol1)
 	engine.LoadCurrentProtocol(app.GetKVStore(protocol.KeyProtocol))
 
 	return app
@@ -97,6 +99,7 @@ func MakeCodec() *codec.Codec {
 	distr.RegisterCodec(cdc)
 	slashing.RegisterCodec(cdc)
 	gov.RegisterCodec(cdc)
+	gov1.RegisterCodec(cdc)
 	govtypes.RegisterCodec(cdc)
 	record.RegisterCodec(cdc)
 	upgrade.RegisterCodec(cdc)
